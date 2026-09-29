@@ -15,6 +15,7 @@ def send_morse(pin_obj, signals, unit):
         time.sleep_ms(s * unit)
         pin_obj.value(0)               
         time.sleep_ms(unit)
+        
     if signals == SOS:
         print("SOS 전송 완료")
     elif signals == ILOVEYOU:
