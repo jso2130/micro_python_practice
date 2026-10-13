@@ -1,17 +1,17 @@
 import bluetooth, time
 from machine import Pin, PWM, Timer
 
-NAME = "CAM-00"                                 # ★ 내 번호로 바꾼다
+NAME = "CAM-DW502-정승윤"                       # 블루투스 이름
 btn = Pin(0, Pin.IN, Pin.PULL_UP)               # 누르면 0
 flash = PWM(Pin(4), freq=1000, duty=0)          # 플래시 밝기 0~1023 (직시 금지)
 red = Pin(33, Pin.OUT, value=1)                 # 빨간 LED: 0 이 켜짐
-BRIGHT = 60                                     # 약한 밝기
+BRIGHT = [50,100,150]                                     
 
 # ── 블루투스: 보드→폰(TX) 통로와 폰→보드(RX) 통로를 둘 다 만든다 ──
 UART = bluetooth.UUID("6E400001-B5A3-F393-E0A9-E50E24DCCA9E")
-TX = (bluetooth.UUID("6E400003-B5A3-F393-E0A9-E50E24DCCA9E"), bluetooth.FLAG_NOTIFY)
+TX = (bluetooth.UUID("6E400003-B5A3-F393-E0A9-E50E24DCCA9E"), bluetooth.FLAG_NOTIFY)   # 데이터 보내는 입
 RX = (bluetooth.UUID("6E400002-B5A3-F393-E0A9-E50E24DCCA9E"),
-      bluetooth.FLAG_WRITE | bluetooth.FLAG_WRITE_NO_RESPONSE)
+      bluetooth.FLAG_WRITE | bluetooth.FLAG_WRITE_NO_RESPONSE)     # 요청 듣는 귀
 SERVICE = (UART, (TX, RX))
 
 ble = bluetooth.BLE()
@@ -61,10 +61,18 @@ def timer_isr(t):
 def task_10ms():
     global btn_last, command
     if command:                                 # 폰에서 온 명령이 있으면 처리한다
-        if command == "1":
-            flash.duty(BRIGHT)
+        if command == "3":
+            flash.duty(BRIGHT[2])
             red.value(0)
-            send("플래시 켜짐")
+            send("플래시 켜짐 (밝기 3단계)")
+        elif command == "2":
+            flash.duty(BRIGHT[1])
+            red.value(0)
+            send("플래시 켜짐 (밝기 2단계)")
+        elif command == "1":
+            flash.duty(BRIGHT[0])
+            red.value(0)
+            send("플래시 켜짐 (밝기 1단계)")
         elif command == "0":
             flash.duty(0)
             red.value(1)
