@@ -11,15 +11,15 @@ def timer_100ms():
 
 def timer_500ms():
     red.value(not red.value())
-    time.sleep_ms(300)  # 이 함수가 300ms 걸리는 일을 한다고 가정
+    time.sleep_ms(300)             # red값을 바꾸고 300ms 쉰다. 
 
 
 while True:
     time.sleep_ms(1)
-    time_cnt += 1
+    time_cnt += 1        # sleep시간을 이용해 카운트 세기
 
     if time_cnt % 100 == 0:
         timer_100ms()
 
-    if time_cnt % 500 == 0:
+    if time_cnt % 500 == 0:     
         timer_500ms()

@@ -8,7 +8,7 @@ M4_motor = PWM(Pin(41), freq = 10000 ,duty=0)
 
 try:
     while True:
-        M1_motor.duty(0)
+        M1_motor.duty(0)    # 방향설정을 위해 모터 하나씩 따로 
         M2_motor.duty(0)
         M3_motor.duty(0)
         M4_motor.duty(0)
