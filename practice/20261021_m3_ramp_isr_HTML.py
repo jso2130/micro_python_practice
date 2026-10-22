@@ -2,6 +2,9 @@ import bluetooth, ble_simple_peripheral
 from machine import Pin, PWM, Timer
 
 # ───── ★ 고쳐 쓰는 값(파라미터): 이 칸의 숫자만 바꾸면 된다 ─────
+SSID = "여기에_와이파이_이름"                   # ★ 화면에 안내된 와이파이 이름으로 바꾼다
+PASSWORD = "여기에_비밀번호" 
+
 NAME = "pyD_2130"        
 MAX_DUTY = 100           
 STEP = 1                 # 100ms 마다 바뀌는 듀티 크기
@@ -14,110 +17,62 @@ M2_motor = PWM(Pin(5), freq=PWM_FREQ, duty=0)    # 2번 모터
 M3_motor = PWM(Pin(40), freq=PWM_FREQ, duty=0)   # 3번 모터
 M4_motor = PWM(Pin(41), freq=PWM_FREQ, duty=0)   # 4번 모터
 
-ble = bluetooth.BLE()
-p = ble_simple_peripheral.BLESimplePeripheral(ble, name=NAME)
-
 rx_data = None           # 폰이 보낸 것을 적어 두는 포스트잇
 target = 0               # 폰이 정해 준 목표 듀티
 duty = 0                 # 지금 듀티
 
-# 인터럽트가 세우는 깃발: 시간 단위마다 하나씩
-flag_10ms = False
-flag_100ms = False
-flag_500ms = False
+ble = bluetooth.BLE()
+p = ble_simple_peripheral.BLESimplePeripheral(ble, name=NAME)
 
-isr_cnt = 0              # 인터럽트가 세는 ms (메인은 건드리지 않는다)
-
-def timer_isr(t):
-    global isr_cnt, flag_10ms, flag_100ms, flag_500ms
-    isr_cnt += 1
-    if isr_cnt % 10 == 0:
-        flag_10ms = True
-    if isr_cnt % 100 == 0:
-        flag_100ms = True
-    if isr_cnt >= 500:
-        flag_500ms = True
-        isr_cnt = 0
-    # 깃발만 세우고 바로 빠져나간다
+wlan = network.WLAN(network.STA_IF)
+wlan.active(False)                              # 앞 실행에서 남은 접속 시도를 지우려고
+time.sleep_ms(1000)                             # 껐다가 1초 쉬고
+wlan.active(True)                               # 다시 켠다
+wlan.connect(SSID, PASSWORD)
+while not wlan.isconnected():
+    time.sleep_ms(300)
+ip = wlan.ifconfig()[0]
+print("브라우저에 이 주소를 입력하세요 → http://" + ip)
 
 def on_rx(read):                   # 받은 값을 변수에 저장
     global rx_data
     rx_data = read
-
+    
 p.on_write(on_rx)
 
-def to_number(read):                # 입력값을 숫자로 
-    if INPUT_MODE == "byte":
-        return read[0]
-    return int(read.decode().strip())
+def page(state):
+    return ("HTTP/1.0 200 OK\r\nContent-Type: text/html; charset=utf-8\r\n\r\n"
+            "<html><body style='font-size:40px;text-align:center'>"
+            "<h1>드론 모터 제어하기</h1><p>지금: <b>" + state + "</b></p>"
+            "<p><a href='/on'>켜기</a> &nbsp; <a href='/off'>끄기</a></p>"
+            "</body></html>")
 
-def limit(n, lo, hi):               # duty 범위
-    if n < lo:
-        return lo
-    if n > hi:
-        return hi
-    return n
+server = socket.socket()
+server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+server.bind(("0.0.0.0", 80))
+server.listen(2)
 
-def move_toward(now, goal, step):    # step만큼 천천히 올라가고 내려가게
-    if now < goal:
-        return min(now + step, goal)   
-    if now > goal:
-        return max(now - step, goal)
-    return now
 
-def set_duty(d1, d2, d3, d4):        # 모터마다 듀티를 하나씩 직접 정해 준다
-    M1_motor.duty(d1)
-    M2_motor.duty(d2)
-    M3_motor.duty(d3)
-    M4_motor.duty(d4)
-
-def task_10ms():                     # 10ms 마다 폰이 보낸 값이 범위에 들어오는지 확인
-    global rx_data, target
-    if rx_data is not None:
-        data = rx_data
-        rx_data = None
-        try:
-            target = limit(to_number(data), 0, MAX_DUTY)
-            print("목표 듀티 =", target)
-        except ValueError:
-            print("숫자를 보내 주세요:", data)
-
-def task_100ms():                    # 100ms 마다 : 목표 쪽으로 한 걸음
-    global duty
-    goal = target if p.is_connected() else 0      # 연결이 끊어지면 목표(duty)를 0 으로
-    
-    new = move_toward(duty, goal, STEP)
-    if new != duty:                     # duty가 변했으면 변한 값으로 적용
-        duty = new
-        set_duty(duty, duty, duty, duty)
-        if duty == 0:
-            print("모터 꺼짐")
-
-def task_500ms():                    # 목표값과 duty가 다르면 500ms 마다 지금 duty상태를 알려 준다
-    if duty != target:
-        print("목표", target, " 현재", duty)
-
-tmr = Timer(0)
-tmr.init(period=1, mode=Timer.PERIODIC, callback=timer_isr)
-print("광고 중:", NAME)
-
+state = "꺼짐"
 try:
     while True:
-        # 메인은 깃발이 서 있는지만 본다. 내리고 나서 일을 한다
-        if flag_10ms:
-            flag_10ms = False
-            task_10ms()
-        if flag_100ms:
-            flag_100ms = False
-            task_100ms()
-        if flag_500ms:
-            flag_500ms = False
-            task_500ms()
+        client, addr = server.accept()          # 브라우저가 문을 두드릴 때까지 기다린다
+        request = client.recv(512).decode()
+        path = request.split(" ")[1] if " " in request else "/"
+        print("요청:", addr[0], path)
+        if path == "/on":
+            flash.duty(BRIGHT)
+            state = "켜짐"
+        elif path == "/off":
+            flash.duty(0)
+            state = "꺼짐"
+        client.send(page(state))
+        client.close()
 except KeyboardInterrupt:
-    tmr.deinit()
-    set_duty(0, 0, 0, 0)
-    M1_motor.deinit()
-    M2_motor.deinit()
-    M3_motor.deinit()
-    M4_motor.deinit()
-    print("정지 — 모터 꺼짐")
+    pass
+finally:
+    server.close()
+    flash.duty(0)
+    flash.deinit()
+    red.value(1)
+    print("정지")
