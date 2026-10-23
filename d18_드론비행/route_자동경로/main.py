@@ -4,7 +4,7 @@ import bluetooth, ble_simple_peripheral, time
 from machine import Pin
 import drone
 
-NAME = 'pyD_01'   # ← 내 번호로 바꾼다. 8글자 이하. 폰 앱의 [멈춤]을 받으려고 블루투스를 켠다.
+NAME = 'pyD_2130'  
 
 ble = bluetooth.BLE()
 p = ble_simple_peripheral.BLESimplePeripheral(ble, name=NAME)
@@ -73,10 +73,10 @@ try:
             raise EmergencyStop()
         if get_key():
             phase("대기", 3, 0, 0)
-            phase("이륙", 5, TRIM_ROL, TRIM_PIT, takeoff=True)
-            phase("앞으로", 3, TRIM_ROL, FRONT, takeoff=True)
-            phase("뒤로", 3, TRIM_ROL, BACK, takeoff=True)
-            phase("착륙", 5, TRIM_ROL, TRIM_PIT, land=True)
+            phase("이륙", 2, TRIM_ROL, TRIM_PIT, takeoff=True)
+            phase("앞으로", 2, TRIM_ROL, FRONT, takeoff=True)
+            phase("뒤로", 2, TRIM_ROL, BACK, takeoff=True)
+            phase("착륙", 3, TRIM_ROL, TRIM_PIT, land=True)
             print("끝 — 다시 하려면 KEY")
 except EmergencyStop:
     d.stop()                           # 날개를 멈춘다

@@ -6,7 +6,7 @@ import drone
 
 d = drone.DRONE(flightmode=1, debug=0)
 
-def do_calibration():    # 보정
+def do_calibration():    # 보정 (수평, 센서 등등)
     green_led = Pin(42, Pin.OUT)
     while True:
         print(d.read_cal_data())

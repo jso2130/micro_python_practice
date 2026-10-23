@@ -10,13 +10,13 @@ oled = SSD1306_I2C(128, 64, i2c)
 adc = ADC(Pin(2))
 
 while True:
-    voltage = adc.read() / 4095 * 5.02 * 0.96     # 교재 2-3 의 환산식
+    voltage = adc.read() / 4095 * 5.02 * 0.96     
     percent = (voltage - 3.0) / (4.25 - 3.0) * 100
-    percent = max(0, min(100, percent))     # 퍼센트 값을 0과 100사이의 범위로 설정해서 덮어씌움
+    percent = max(0, min(100, percent))   # 퍼센트 값을 0과 100사이의 범위로 설정해서 덮어씌움
     oled.fill(0)
-    oled.text("battery", 0, 0)
+    oled.text("battery", 0, 0)           
     oled.text("%.2f V" % voltage, 0, 16)
     oled.text("%d %%" % percent, 0, 32)
-    oled.text("OK" if percent >= 50 else "CHARGE", 0, 48)
+    oled.text("WELCOME" if percent >= 50 else "CHARGE", 0, 48)
     oled.show()
     time.sleep_ms(500)
