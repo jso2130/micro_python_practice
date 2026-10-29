@@ -6,7 +6,7 @@ PHOTOS = ["street.jpg", "cat.jpg", "dog.jpg", "desk.jpg", "fruit.jpg", "moto.jpg
 
 for name in PHOTOS:                                     # 사진 이름을 하나씩 꺼내 아래 줄들을 반복한다
     img = Image.open(name).convert("RGB")               # 사진을 연다 (RGB = 픽셀마다 빨강·초록·파랑 숫자 3개)
-    red_part, green_part, blue_part = img.split()       # split() : 사진을 빨강만·초록만·파랑만 담은 숫자표 세 장으로 나눈다
+    red_part, green_part, blue_part = img.split()       # 사진을 빨강만·초록만·파랑만 담은 숫자표 세 장으로 나눈다
     red = np.array(red_part).mean()                     # 모든 픽셀의 빨강 숫자 평균
     green = np.array(green_part).mean()                 # 모든 픽셀의 초록 숫자 평균
     blue = np.array(blue_part).mean()                   # 모든 픽셀의 파랑 숫자 평균

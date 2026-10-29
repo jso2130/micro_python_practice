@@ -2,7 +2,7 @@ from PIL import Image
 
 # ---- 내가 바꾸는 값 ----
 PHOTO = "cat.jpg"
-N = 20                           # 가로 N 픽셀 × 세로 N 픽셀을 한 칸으로 합친다 (클수록 거칠다)
+N = 5                           # 가로 N 픽셀 × 세로 N 픽셀을 한 칸으로 합친다 (클수록 거칠다)
 
 img = Image.open(PHOTO)
 small = img.resize((img.width // N, img.height // N))          # img.resize((가로, 세로)) : 픽셀의 개수를 줄인다. // 는 나눈 몫만 남긴다
