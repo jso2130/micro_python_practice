@@ -45,7 +45,7 @@ def tick(t):
     if ms % 500 == 0:
         flag_500 = True
 
-def get_distance_cm():                          # 못 읽으면 0
+def get_distance_cm():                          
     trigger.value(0)                            # value(0) : 끈 상태에서 시작
     time.sleep_us(5)                            # sleep_us() : 5 µs 기다린다 (µs = 마이크로초 = 100만분의 1초)
     trigger.value(1)                            # value(1) : 켠다 = 초음파를 쏘기 시작
@@ -61,7 +61,7 @@ def get_distance_cm():                          # 못 읽으면 0
     if 2 <= distance_cm <= 200:
         return distance_cm
     else:
-        return 0               
+        return 0                                       # 못 읽으면(변화가 없으면) 0 반환     
 
 def distance_level(cm):
     # 가까울수록 작은 단계 (t2 와 반대) : NEAR_CM 이하 -> 0, FAR_CM 이상 -> 19
@@ -105,7 +105,7 @@ try:
                 if idx >= len(school_bell):       # 곡이 끝났으면 처음부터 다시
                     idx = 0
                 name, length = school_bell[idx]   # 다음 음의 계이름과 음길이를 다시 가져온다
-                t = ms - note_start               
+                t = ms - note_start               # left(남은 시간)를 위해 재생되고 있는 시간을 잰다.
                 measured = False                  # 새로운 음에서 거리 다시 측정 (듀티 새로 설정하기 위해)
                 if NOTE_HZ[name] != 0:            # 바뀐 음으로 (주파수) 적용
                     buzzer.freq(NOTE_HZ[name])  
