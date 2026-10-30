@@ -4,9 +4,9 @@ from machine import Pin, PWM, Timer             # machine 에서 부품 도구(�
 
 # ---- 객체 만들기 ----
 buzzer = PWM(Pin(6), freq=880, duty=0)
-trigger = Pin(17, mode=Pin.OUT, pull=None)
-echo = Pin(1, mode=Pin.IN, pull=None)
-trigger.value(0)                       # value() 메서드 : 핀 값을 정한다. 0 = 끔 (처음에는 소리를 쏘지 않는다)
+trigger = Pin(17, mode=Pin.OUT, pull=None)  # 쏘는 신호
+echo = Pin(1, mode=Pin.IN, pull=None)       # 받는 신호 : trigger가 돌아오기까지의 시간을 재는 신호
+trigger.value(0)                       # 처음에는 소리를 쏘지 않는다
 
 # ---- 내가 바꾸는 값 ----
 NEAR_CM = 5
