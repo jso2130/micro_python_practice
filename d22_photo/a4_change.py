@@ -3,7 +3,7 @@ from PIL import Image
 
 # ---- 내가 바꾸는 값 ----
 PHOTO = "cat.jpg"
-AMOUNT = 0                      # 모든 픽셀의 밝기에 더할 숫자 (마이너스면 어두워진다)
+AMOUNT = 60                      # 모든 픽셀의 밝기에 더할 숫자 (마이너스면 어두워진다)
 
 gray = np.array(Image.open(PHOTO).convert("L")).astype(int)    # 흑백 숫자표로 바꿔주기 .astype(int) : 255 를 넘는 숫자도 담기도록 정수 형식으로 바꾼다
 changed = np.clip(gray + AMOUNT, 0, 255)           # 모든 칸에 밝기 변화 값을 한꺼번에 더한다.
