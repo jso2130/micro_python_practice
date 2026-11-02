@@ -28,11 +28,11 @@ def timer_isr(t):
 def task_10ms():
     global raw_last, stable, same_ms, raw_changes, presses
     now = btn.value()
-    if now != raw_last:                 # 값이 바뀌었다 → 떨림일 수 있으니 시간을 처음부터 잰다
+    if now != raw_last:                 # 값이 바뀌었다 → 떨림(채터링)일 수 있으니 시간을 처음부터 잰다
         raw_changes += 1
         raw_last = now
         same_ms = 0
-        return
+        return                          # 채터링 카운트를 1번 세고 함수를 종료한다.
     same_ms += CHECK_MS                 # 같은 값이 이어지면 조용한 시간이 쌓인다
     if same_ms >= DEBOUNCE_MS and now != stable:   # 충분히 조용했고 인정된 값과 다르면
         stable = now                    # 이제야 인정한다

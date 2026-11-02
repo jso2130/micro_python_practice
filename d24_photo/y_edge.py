@@ -1,9 +1,9 @@
 import cv2
 
 # ---- 내가 바꾸는 값 ----
-PHOTO = "cat.jpg"
-LOW = 100                               # 윤곽선 후보로 받아 주는 가장 약한 기준 (작을수록 윤곽이 많아진다)
-HIGH = 150                              # 확실한 윤곽선이라고 보는 기준 (LOW 보다 크게 쓴다)
+PHOTO = "street.jpg"
+LOW = 240                               # 윤곽선 후보로 받아 주는 가장 약한 기준 (작을수록 윤곽이 많아진다)
+HIGH = 250                              # 확실한 윤곽선이라고 보는 기준 (LOW 보다 크게 쓴다)
 
 img = cv2.imread(PHOTO)                 # 사진 파일을 숫자표로 읽는다
 height = img.shape[0]                   # 숫자표의 세로 칸 수
@@ -15,4 +15,4 @@ count = cv2.countNonZero(edges)         # 0 이 아닌 칸, 즉 윤곽선 칸의
 print(PHOTO, "기준", LOW, HIGH, "→ 윤곽 칸", count, "개 /", height * width, "칸 중")
 
 cv2.imwrite("edge_result.jpg", edges)   # 윤곽선 사진을 파일로 저장한다
-print("edge_result.jpg 로 저장했다")
+print("edge_result.jpg 로 저장했습니다")
