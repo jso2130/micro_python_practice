@@ -1,11 +1,11 @@
 from ultralytics import YOLO            # ultralytics 도구 상자에서 YOLO 하나만 꺼낸다
 
 # ---- 내가 바꾸는 값 ----
-PHOTO = "japan_street.png"
+PHOTO = ("street.jpg")
 WANT = "person"                         # 세고 싶은 물체의 이름 (person · car · dog · chair · orange …)
 CONF = 0.25                             # 물체로 잡을 신뢰도 기준
 
-model = YOLO("yolov8n-oiv7.pt")
+model = YOLO("yolo26n.pt")
 results = model(PHOTO, conf=CONF)
 result = results[0]                     # 가장 신뢰도가 높은 것만 가져온다.
 
