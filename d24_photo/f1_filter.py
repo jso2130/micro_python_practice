@@ -12,11 +12,11 @@ FILTERS = {
     "흐리게": [[1, 1, 1], [1, 1, 1], [1, 1, 1]],        # 아홉 칸을 모두 더한다 (아래에서 9 로 나눈다)
 }
 
-img = Image.open(PHOTO).convert("L")    # 사진을 흑백으로 바꾼다.
-img.thumbnail((640, 640))               # 사진크기를 줄인다
-table = np.array(img, dtype=float)      # 사진을 숫자표로 바꾼다
-height = table.shape[0]                 # 숫자표의 세로 칸 수
-width = table.shape[1]                  # 숫자표의 가로 칸 수
+img = Image.open(PHOTO).convert("L")         # 사진을 흑백으로 바꾼다.
+img.thumbnail((640, 640))                    # 사진크기를 줄인다
+table = np.array(img, dtype=float)           # 사진을 숫자표로 바꾼다
+height = table.shape[0]                      # 숫자표의 세로 칸 수
+width = table.shape[1]                       # 숫자표의 가로 칸 수
 
 f = np.array(FILTERS[FILTER], dtype=float)   # 고른 필터를 숫자표로 만든다
 if FILTER == "흐리게":
